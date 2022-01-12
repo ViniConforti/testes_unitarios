@@ -1,14 +1,15 @@
 package br.ce.wcaquino.entidades;
 
 import java.util.Date;
+import java.util.List;
 
 public class Locacao {
 
 	private Usuario usuario;
-	private Filme filme;
+	private List<Filme> filmes;
 	private Date dataLocacao;
 	private Date dataRetorno;
-	private Double valor;
+	private Double valor = 0D;
 	
 	public Usuario getUsuario() {
 		return usuario;
@@ -28,16 +29,18 @@ public class Locacao {
 	public void setDataRetorno(Date dataRetorno) {
 		this.dataRetorno = dataRetorno;
 	}
-	public Double getValor() {
+	public Double getCalculaValorLocacao() {
 		return valor;
 	}
-	public void setValor(Double valor) {
-		this.valor = valor;
+	public void setCalculaValorLocacao(List<Filme> filmes) {
+		for (Filme filme: filmes)
+			valor += filme.getPrecoLocacao();
+
 	}
-	public Filme getFilme() {
-		return filme;
+	public List<Filme> getFilmes() {
+		return filmes;
 	}
-	public void setFilme(Filme filme) {
-		this.filme = filme;
+	public void setFilmes(List<Filme> filme) {
+		this.filmes = filme;
 	}
 }
