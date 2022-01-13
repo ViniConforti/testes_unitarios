@@ -49,8 +49,10 @@ public class LocacaoServiceTest {
     }
     */
     @Test
-    public void testeLocacao() throws Exception {
+    public void deve_Efetuar_Locacao_Com_Sucesso() throws Exception {
         // Cenario
+
+        Assume.assumeFalse(DataUtils.verificarDiaSemana(new Date(),Calendar.SATURDAY));
 
         Usuario usuario = new Usuario("teste");
         List<Filme> filmes =  Arrays.asList(new Filme("filme 1", 2, 5.0),
@@ -68,7 +70,7 @@ public class LocacaoServiceTest {
 
 
     @Test(expected = FilmeSemEstoqueException.class)
-    public void testeLocacao_filme_sem_estoque() throws Exception{
+    public void deve_Lancar_Excecao_Caso_Filme_Nao_Tenha_Estoque() throws Exception{
         // Cenario
         Usuario usuario = new Usuario("teste");
 
@@ -81,7 +83,7 @@ public class LocacaoServiceTest {
 
 
     @Test()
-    public void testeLocacao_usuario_vazio() throws FilmeSemEstoqueException {
+    public void deve_Lancar_Excecao_Caso_Usuario_Seja_Nulo() throws FilmeSemEstoqueException {
         List<Filme> filmes =  Arrays.asList(new Filme("filme 1", 2, 5.0),
                 new Filme("filme 2", 2, 9.0));
         try {
@@ -93,7 +95,7 @@ public class LocacaoServiceTest {
     }
 
     @Test
-    public void testeLocacao_filmes_vazio() {
+    public void deve_Lancar_Excecao_Caso_Filme_Seja_Nulo() {
         Usuario usuario = new Usuario("teste");
         Assert.assertThrows(LocadoraException.class,
                 ()-> locacaoService.alugarFilme(usuario,null));
@@ -116,7 +118,7 @@ public class LocacaoServiceTest {
     }
 
     @Test
-    public void testeLocacao_filme_vazio() {
+    public void deve_Lancar_Excecao_Caso_A_Lista_De_Filmes_Esteja_Vazia_Ou_Nula() {
         Usuario usuario = new Usuario("teste");
 
         List<Filme> filmes =  Arrays.asList(new Filme("filme 1", 2, 5.0), null);
@@ -130,6 +132,48 @@ public class LocacaoServiceTest {
         MatcherAssert.assertThat(errorMessage, is("Filme nulo"));
 
 
+    }
+
+    @Test
+    public void deve_Aplicar_Descontos_Nos_Filmes_3_25pct_4_50pct_5_75pct_e_6_100pct() throws FilmeSemEstoqueException, LocadoraException {
+        // cenario
+        List<Filme> filmes =  Arrays.asList(
+                new Filme("filme 1", 2, 5.0),
+                new Filme("filme 2", 2, 5.0),
+                new Filme("filme 3", 2, 5.0),
+                new Filme("filme 4", 2, 5.0),
+                new Filme("filme 5", 2, 5.0),
+                new Filme("filme 6", 2, 5.0));
+
+        // acao
+        Locacao locacao = locacaoService.alugarFilme(new Usuario("teste"),filmes);
+
+        //verificacao
+        errorCollector.checkThat(locacao.getFilmes().get(2).getPrecoLocacao(), is(3.75));
+        errorCollector.checkThat(locacao.getFilmes().get(3).getPrecoLocacao(), is(2.50));
+        errorCollector.checkThat(locacao.getFilmes().get(4).getPrecoLocacao(), is(1.25));
+        errorCollector.checkThat(locacao.getFilmes().get(5).getPrecoLocacao(), is(0.0));
+
+
+    }
+
+    @Test
+    //@Ignore // Nao executa esse teste, ele é ignorado
+    public void nao_deve_devolver_locacao_no_domingo() throws FilmeSemEstoqueException, LocadoraException {
+        //cenario
+        /*Assumption, assume que a data de hj é sabado, nesse caso de teste
+         Se nao for, o teste sera ignorado
+         */
+        Assume.assumeTrue(DataUtils.verificarDiaSemana(new Date(),Calendar.SATURDAY));
+
+        List<Filme> filmes =  Arrays.asList(
+                new Filme("filme 1", 2, 5.0));
+
+        // acao
+        Locacao locacao = locacaoService.alugarFilme(new Usuario("teste"),filmes);
+
+        //verificacao
+        Assert.assertTrue(DataUtils.verificarDiaSemana(locacao.getDataRetorno(),Calendar.MONDAY));
     }
 
     /*
