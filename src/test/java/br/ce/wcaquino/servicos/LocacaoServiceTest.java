@@ -134,8 +134,9 @@ public class LocacaoServiceTest {
 
     }
 
+
     @Test
-    public void deve_Aplicar_Descontos_Nos_Filmes_3_25pct_4_50pct_5_75pct_e_6_100pct() throws FilmeSemEstoqueException, LocadoraException {
+    public void deve_Aplicar_Descontos_Na_Locacao_Nos_Filmes_3_25pct_4_50pct_5_75pct_e_6_100pct() throws FilmeSemEstoqueException, LocadoraException {
         // cenario
         List<Filme> filmes =  Arrays.asList(
                 new Filme("filme 1", 2, 5.0),
@@ -157,6 +158,8 @@ public class LocacaoServiceTest {
 
     }
 
+
+
     @Test
     //@Ignore // Nao executa esse teste, ele é ignorado
     public void nao_deve_devolver_locacao_no_domingo() throws FilmeSemEstoqueException, LocadoraException {
@@ -167,7 +170,8 @@ public class LocacaoServiceTest {
         Assume.assumeTrue(DataUtils.verificarDiaSemana(new Date(),Calendar.SATURDAY));
 
         List<Filme> filmes =  Arrays.asList(
-                new Filme("filme 1", 2, 5.0));
+                new Filme("filme 1", 2, 5.0),
+                new Filme("filme 2", 2, 5.0));
 
         // acao
         Locacao locacao = locacaoService.alugarFilme(new Usuario("teste"),filmes);
