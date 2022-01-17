@@ -7,10 +7,10 @@ import br.ce.wcaquino.excecoes.FilmeSemEstoqueException;
 import br.ce.wcaquino.excecoes.LocadoraException;
 import br.ce.wcaquino.utils.DataUtils;
 import static org.hamcrest.CoreMatchers.is;
-
 import org.hamcrest.MatcherAssert;
 import org.junit.*;
 import org.junit.rules.ErrorCollector;
+import static br.ce.wcaquino.servicos.matchers.MatchersProprios.*;
 
 import java.util.*;
 
@@ -62,10 +62,8 @@ public class LocacaoServiceTest {
 
         //resultado
         errorCollector.checkThat(locacao.getCalculaValorLocacao(), is(14.00));
-        errorCollector.checkThat(DataUtils.isMesmaData(locacao.getDataLocacao(),new Date()),
-                    is(true));
-        errorCollector.checkThat(DataUtils.isMesmaData(locacao.getDataRetorno(),
-                    DataUtils.obterDataComDiferencaDias(1)),is(true));
+        errorCollector.checkThat(locacao.getDataLocacao(),ehHoje());
+        errorCollector.checkThat(locacao.getDataRetorno(),ehHojeComDiferenciaDeDias(1));
     }
 
 
@@ -177,7 +175,8 @@ public class LocacaoServiceTest {
         Locacao locacao = locacaoService.alugarFilme(new Usuario("teste"),filmes);
 
         //verificacao
-        Assert.assertTrue(DataUtils.verificarDiaSemana(locacao.getDataRetorno(),Calendar.MONDAY));
+        MatcherAssert.assertThat(locacao.getDataRetorno(), caiEm(Calendar.MONDAY));
+        MatcherAssert.assertThat(locacao.getDataRetorno(), caiNaSegunda());
     }
 
     /*
