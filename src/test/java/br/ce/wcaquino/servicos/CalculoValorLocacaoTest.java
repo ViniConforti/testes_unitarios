@@ -1,5 +1,7 @@
 package br.ce.wcaquino.servicos;
 
+import br.ce.wcaquino.daos.LocacaoDAO;
+import br.ce.wcaquino.daos.LocacaoDaoFake;
 import br.ce.wcaquino.entidades.Filme;
 import br.ce.wcaquino.entidades.Locacao;
 import br.ce.wcaquino.entidades.Usuario;
@@ -11,11 +13,13 @@ import org.junit.Test;
 import org.junit.rules.ErrorCollector;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.mockito.Mockito;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import static br.ce.wcaquino.builders.FilmeBuilder.*;
 import static org.hamcrest.CoreMatchers.is;
 
 //Roda os testes parametrizados
@@ -42,12 +46,12 @@ public class CalculoValorLocacaoTest {
         // cada linha do array representa um cenário distinto nos testes
         return Arrays.asList(new Object[][]{
                 {Arrays.asList(
-                        new Filme("filme 1", 2, 5.0),
-                        new Filme("filme 2", 2, 5.0),
-                        new Filme("filme 3", 2, 5.0),
-                        new Filme("filme 4", 2, 5.0),
-                        new Filme("filme 5", 2, 5.0),
-                        new Filme("filme 6", 2, 5.0)),
+                        umFilme().agora(),
+                        umFilme().agora(),
+                        umFilme().agora(),
+                        umFilme().agora(),
+                        umFilme().agora(),
+                        umFilme().agora()),
                         "Terceiro filme: 25%, Quarto filme: 50%, Quinto filme:75%, Sexto filme: 100%"
                 }
         });
@@ -59,18 +63,20 @@ public class CalculoValorLocacaoTest {
     @Before
     public void setup(){
         locacaoService = new LocacaoService();
+        LocacaoDAO locacaoDAO = Mockito.mock(LocacaoDAO.class);
+        locacaoService.setLocacaoDAO(locacaoDAO);
     }
 
     @Test
     public void deve_calcular_valor_locacao_considerando_descontos() throws FilmeSemEstoqueException, LocadoraException {
         // cenario
         List<Filme> filmes =  Arrays.asList(
-                new Filme("filme 1", 2, 5.0),
-                new Filme("filme 2", 2, 5.0),
-                new Filme("filme 3", 2, 5.0),
-                new Filme("filme 4", 2, 5.0),
-                new Filme("filme 5", 2, 5.0),
-                new Filme("filme 6", 2, 5.0));
+                umFilme().agora(),
+                umFilme().agora(),
+                umFilme().agora(),
+                umFilme().agora(),
+                umFilme().agora(),
+                umFilme().agora());
 
         // acao
         Locacao locacao = locacaoService.alugarFilme(new Usuario("teste"),filmes);
