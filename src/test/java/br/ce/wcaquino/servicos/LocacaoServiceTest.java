@@ -3,6 +3,7 @@ package br.ce.wcaquino.servicos;
 import static br.ce.wcaquino.builders.UsuarioBuilder.*;
 import static br.ce.wcaquino.builders.FilmeBuilder.*;
 
+import br.ce.wcaquino.builders.LocacaoBuilder;
 import br.ce.wcaquino.daos.LocacaoDAO;
 import br.ce.wcaquino.daos.LocacaoDaoFake;
 import br.ce.wcaquino.entidades.Filme;
@@ -31,6 +32,12 @@ public class LocacaoServiceTest {
 
     private LocacaoService locacaoService;
 
+    private LocacaoDAO locacaoDAO;
+
+    private SPCService spcService;
+
+    private EmailService emailService;
+
     /*
     Se precisar de alguma variavel que seja persistida entre um teste e outro,
     utilize ela como estatica, assim o junit nao vai reinicializar ela a cada teste,
@@ -45,8 +52,14 @@ public class LocacaoServiceTest {
     @Before
     public void setup(){
         locacaoService = new LocacaoService();
-        LocacaoDAO locacaoDAO = Mockito.mock(LocacaoDAO.class);
+        locacaoDAO = Mockito.mock(LocacaoDAO.class);
         locacaoService.setLocacaoDAO(locacaoDAO);
+
+        spcService = Mockito.mock(SPCService.class);
+        locacaoService.setSpcService(spcService);
+
+        emailService = Mockito.mock(EmailService.class);
+        locacaoService.setEmailService(emailService);
     }
 
     /*Esse before class é executado antes da instanciacao da classe de teste.
@@ -182,6 +195,46 @@ public class LocacaoServiceTest {
         //verificacao
         MatcherAssert.assertThat(locacao.getDataRetorno(), caiEm(Calendar.MONDAY));
         MatcherAssert.assertThat(locacao.getDataRetorno(), caiNaSegunda());
+    }
+
+    @Test
+    public void nao_deve_alugar_filme_para_negativado_spc() {
+        // cenario
+        Usuario usuario = umUsuario().agora();
+
+        List<Filme> filmes = Arrays.asList(umFilme().agora(), umFilme().agora());
+
+        Mockito.when(spcService.possuiNegativacao(usuario)).thenReturn(true);
+
+        Assert.assertThrows(LocadoraException.class,
+                ()-> locacaoService.alugarFilme(usuario,filmes));
+
+        Mockito.verify(spcService).possuiNegativacao(usuario);
+
+        String errorMessage = Assert.assertThrows(LocadoraException.class,
+                ()-> locacaoService.alugarFilme(usuario,filmes)).getMessage();
+
+        MatcherAssert.assertThat(errorMessage, is("Usuario negativado"));
+
+
+    }
+
+    @Test
+    public void deve_enviar_email_para_locacoes_atrasadas(){
+        //cenario
+        Usuario usuario = umUsuario().agora();
+
+        List<Locacao> locacoes = Arrays.asList(LocacaoBuilder.umaLocacao()
+                        .emAtraso(DataUtils.obterDataComDiferencaDias(-2))
+                        .comUsuario(usuario).agora());
+
+        Mockito.when(locacaoDAO.obterLocacoesPendentes()).thenReturn(locacoes);
+
+        //acao
+         locacaoService.notificarAtrasos();
+
+         //verificacao
+        Mockito.verify(emailService).notificarAtraso(usuario);
     }
 
     /*

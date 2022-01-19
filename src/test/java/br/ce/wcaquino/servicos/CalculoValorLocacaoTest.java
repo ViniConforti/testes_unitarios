@@ -65,6 +65,12 @@ public class CalculoValorLocacaoTest {
         locacaoService = new LocacaoService();
         LocacaoDAO locacaoDAO = Mockito.mock(LocacaoDAO.class);
         locacaoService.setLocacaoDAO(locacaoDAO);
+
+        SPCService spcService = Mockito.mock(SPCService.class);
+        locacaoService.setSpcService(spcService);
+
+        EmailService emailService = Mockito.mock(EmailService.class);
+        locacaoService.setEmailService(emailService);
     }
 
     @Test
