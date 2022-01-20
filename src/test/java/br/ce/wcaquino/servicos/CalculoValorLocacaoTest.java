@@ -13,7 +13,9 @@ import org.junit.Test;
 import org.junit.rules.ErrorCollector;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.mockito.Mockito;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -36,6 +38,14 @@ public class CalculoValorLocacaoTest {
     @Parameterized.Parameter(value = 1)
     public String cenario;
 
+
+    @Mock
+    private SPCService spcService;
+
+    @Mock
+    private LocacaoDAO locacaoDAO;
+
+    @InjectMocks
     private LocacaoService locacaoService;
 
     /*Anotacao que informa ao junit que a fonte de dados vem desse método abaixo.
@@ -62,15 +72,7 @@ public class CalculoValorLocacaoTest {
 
     @Before
     public void setup(){
-        locacaoService = new LocacaoService();
-        LocacaoDAO locacaoDAO = Mockito.mock(LocacaoDAO.class);
-        locacaoService.setLocacaoDAO(locacaoDAO);
-
-        SPCService spcService = Mockito.mock(SPCService.class);
-        locacaoService.setSpcService(spcService);
-
-        EmailService emailService = Mockito.mock(EmailService.class);
-        locacaoService.setEmailService(emailService);
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test

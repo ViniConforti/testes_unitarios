@@ -37,7 +37,15 @@ public class LocacaoService {
 		if(usuario == null)
 			throw new LocadoraException("Usuario nulo");
 
-		if (spcService.possuiNegativacao(usuario))
+		boolean negativado;
+
+		try {
+			negativado = spcService.possuiNegativacao(usuario);
+		} catch (Exception e) {
+			throw new LocadoraException("Problemas com SPC, tente novamente");
+		}
+
+		if (negativado)
 			throw new LocadoraException("Usuario negativado");
 
 		Locacao locacao = new Locacao();
@@ -91,13 +99,9 @@ public class LocacaoService {
 
 	public void notificarAtrasos(){
 		List<Locacao> locacoes = locacaoDAO.obterLocacoesPendentes();
-		for(Locacao locacao: locacoes)
-			emailService.notificarAtraso(locacao.getUsuario());
+		for(Locacao locacao: locacoes) {
+			if (locacao.getDataRetorno().before(new Date()))
+				emailService.notificarAtraso(locacao.getUsuario());
+		}
 	}
-
-	public void setLocacaoDAO(LocacaoDAO dao){
-		this.locacaoDAO = dao;
-	}
-	public void setSpcService(SPCService spcService){this.spcService = spcService;}
-	public void setEmailService(EmailService emailService){this.emailService = emailService;}
 }
