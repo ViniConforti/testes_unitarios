@@ -22,4 +22,8 @@ public class Calculadora {
         return a/b;
 
     }
+
+    public void imprimir(){
+        System.out.println("Passei aqui");
+    }
 }

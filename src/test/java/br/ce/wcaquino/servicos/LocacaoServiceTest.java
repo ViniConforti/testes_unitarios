@@ -1,9 +1,7 @@
 package br.ce.wcaquino.servicos;
-
 import static br.ce.wcaquino.builders.UsuarioBuilder.*;
 import static br.ce.wcaquino.builders.FilmeBuilder.*;
-
-import br.ce.wcaquino.builders.LocacaoBuilder;
+import static br.ce.wcaquino.builders.LocacaoBuilder.*;
 import br.ce.wcaquino.daos.LocacaoDAO;
 import br.ce.wcaquino.entidades.Filme;
 import br.ce.wcaquino.entidades.Locacao;
@@ -15,14 +13,16 @@ import static org.hamcrest.CoreMatchers.is;
 import org.hamcrest.MatcherAssert;
 import org.junit.*;
 import org.junit.rules.ErrorCollector;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 
 import static br.ce.wcaquino.servicos.matchers.MatchersProprios.*;
 
 import java.util.*;
+
+// Estou definindo pro JUNIT que o powermock irá gerenciar os testes
+
+
+//Informa ao powermock pra preparar a classe pro teste. Sem isso, da problema
 
 public class LocacaoServiceTest {
 
@@ -179,7 +179,7 @@ public class LocacaoServiceTest {
 
     @Test
     //@Ignore // Nao executa esse teste, ele é ignorado
-    public void nao_deve_devolver_locacao_no_domingo() throws FilmeSemEstoqueException, LocadoraException {
+    public void nao_deve_devolver_locacao_no_domingo() throws Exception {
         //cenario
         /*Assumption, assume que a data de hj é sabado, nesse caso de teste
          Se nao for, o teste sera ignorado
@@ -227,15 +227,15 @@ public class LocacaoServiceTest {
         Usuario usuario2 = umUsuario().comNome("Usuário em dia").agora();
         Usuario usuario3 = umUsuario().comNome("Outro atrasado").agora();
 
-        List<Locacao> locacoes = Arrays.asList(LocacaoBuilder.umaLocacao()
+        List<Locacao> locacoes = Arrays.asList(umaLocacao()
                         .emAtraso()
                         .comUsuario(usuario).agora(),
-                LocacaoBuilder.umaLocacao()
+                umaLocacao()
                         .comUsuario(usuario2).agora(),
-                LocacaoBuilder.umaLocacao()
+                umaLocacao()
                         .emAtraso()
                         .comUsuario(usuario3).agora(),
-                LocacaoBuilder.umaLocacao()
+                umaLocacao()
                         .emAtraso()
                         .comUsuario(usuario3).agora());
 
@@ -298,9 +298,26 @@ public class LocacaoServiceTest {
 
         MatcherAssert.assertThat(errorMessage, is("Problemas com SPC, tente novamente"));
 
-        //verificacao
     }
 
+    @Test
+    public void deve_prorrogar_locacao(){
+        //cenario
+        Locacao locacao = umaLocacao().agora();
+
+        //acao
+        locacaoService.prorrogar_locacao(locacao, 2);
+
+        //verificacao
+        ArgumentCaptor<Locacao> argumentCaptor = ArgumentCaptor.forClass(Locacao.class);
+        Mockito.verify(locacaoDAO).salvar(argumentCaptor.capture());
+        Locacao locacaoCapturada = argumentCaptor.getValue();
+
+        errorCollector.checkThat(locacaoCapturada.getDataRetorno(),ehHojeComDiferenciaDeDias(2));
+        errorCollector.checkThat(locacaoCapturada.getDataLocacao(), ehHoje());
+        errorCollector.checkThat(locacaoCapturada.getFilmes(),is(locacao.getFilmes()));
+
+    }
     /*
     @Test
     public void testeLocacao_filme_sem_estoque_2(){

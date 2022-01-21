@@ -4,6 +4,8 @@ import br.ce.wcaquino.utils.DataUtils;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -20,7 +22,9 @@ public class DataMatchers extends TypeSafeMatcher<Date> {
     public void describeTo(Description description) {
         //Descricao do teste
 
-        description.appendText("Hoje:"+Calendar.getInstance().getTime());
+        Date dataEsperada = DataUtils.obterDataComDiferencaDias(this.diferencaDeDias);
+        DateFormat format = new SimpleDateFormat("dd/MM/YYYY");
+        description.appendText(format.format(dataEsperada));
     }
 
     @Override
