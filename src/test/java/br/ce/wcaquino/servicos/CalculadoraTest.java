@@ -4,10 +4,13 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import br.ce.wcaquino.excecoes.DivisaoPorZero;
+import br.ce.wcaquino.runners.ParallelRunner;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
+//@RunWith(ParallelRunner.class)
 public class CalculadoraTest {
     private Calculadora calculadora;
 

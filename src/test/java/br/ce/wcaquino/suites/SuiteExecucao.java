@@ -3,9 +3,6 @@ package br.ce.wcaquino.suites;
 import br.ce.wcaquino.servicos.CalculadoraTest;
 import br.ce.wcaquino.servicos.CalculoValorLocacaoTest;
 import br.ce.wcaquino.servicos.LocacaoServiceTest;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 //Nessa anotacao, é informado que a classe vai executar como uma suite de testes

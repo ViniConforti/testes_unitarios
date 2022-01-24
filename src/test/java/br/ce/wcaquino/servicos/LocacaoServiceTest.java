@@ -8,11 +8,13 @@ import br.ce.wcaquino.entidades.Locacao;
 import br.ce.wcaquino.entidades.Usuario;
 import br.ce.wcaquino.excecoes.FilmeSemEstoqueException;
 import br.ce.wcaquino.excecoes.LocadoraException;
+import br.ce.wcaquino.runners.ParallelRunner;
 import br.ce.wcaquino.utils.DataUtils;
 import static org.hamcrest.CoreMatchers.is;
 import org.hamcrest.MatcherAssert;
 import org.junit.*;
 import org.junit.rules.ErrorCollector;
+import org.junit.runner.RunWith;
 import org.mockito.*;
 
 import static br.ce.wcaquino.servicos.matchers.MatchersProprios.*;
@@ -24,6 +26,7 @@ import java.util.*;
 
 //Informa ao powermock pra preparar a classe pro teste. Sem isso, da problema
 
+//@RunWith(ParallelRunner.class)
 public class LocacaoServiceTest {
 
     /* anotacao interessante, caso um teste tenha varios asserts
